@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/home_view_model.dart';
+import '../../core/app_theme.dart';
 import 'components/crypto_header.dart';
 import 'components/crypto_search_field.dart';
 import 'components/crypto_list.dart';
 import 'components/crypto_details_modal.dart';
 import '../../../domain/models/coin/coin_model.dart';
+import '../favorites/favorites_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -35,6 +37,14 @@ class _HomeViewState extends State<HomeView> {
     viewModel.toggleFavorite(crypto);
   }
 
+  void _navigateToFavorites() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const FavoritesView(),
+      ),
+    );
+  }
+
   late final HomeViewModel _viewModel;
   
   @override
@@ -53,8 +63,27 @@ class _HomeViewState extends State<HomeView> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header personalizado
-            const CryptoHeader(),
+            // Header personalizado com botão de favoritos
+            Consumer<HomeViewModel>(
+              builder: (context, viewModel, _) {
+                return CryptoHeader(
+                  favoritesButton: IconButton(
+                    onPressed: _navigateToFavorites,
+                    icon: Badge.count(
+                      count: viewModel.favorites.length,
+                      backgroundColor: AppTheme.accentColor,
+                      offset: const Offset(10, -10),
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    tooltip: 'Favoritos',
+                  ),
+                );
+              },
+            ),
 
             // Campo de busca
             Consumer<HomeViewModel>(

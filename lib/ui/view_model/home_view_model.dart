@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 import '../../domain/repositories/crypto_repository.dart';
 import '../../domain/models/coin/coin_model.dart';
@@ -9,7 +10,9 @@ class HomeViewModel extends ChangeNotifier {
   final CryptoRepository cryptoRepository;
   final FavoritesRepository favoritesRepository;
 
-  HomeViewModel({required this.cryptoRepository, required this.favoritesRepository});
+  HomeViewModel({required this.cryptoRepository, required this.favoritesRepository}) {
+    _initializeFavoritesListener();
+  }
 
   // Search state management using DelayedResult
   DelayedResult<List<CoinModel>> _searchResult = const DelayedResult.idle();
@@ -19,6 +22,9 @@ class HomeViewModel extends ChangeNotifier {
   DelayedResult<List<CoinModel>> _favoritesResult = const DelayedResult.idle();
   Set<String> _favoriteIds = <String>{};
   bool _favoritesLoaded = false;
+  
+  // Stream subscription para ouvir mudanças nos favoritos
+  StreamSubscription<List<CoinModel>>? _favoritesSubscription;
 
   // Getters
   DelayedResult<List<CoinModel>> get searchResult => _searchResult;
@@ -34,6 +40,24 @@ class HomeViewModel extends ChangeNotifier {
   List<CoinModel> get favorites => _favoritesResult.value ?? [];
   bool get isFavoritesLoading => _favoritesResult.isInProgress;
   bool get hasFavoritesError => _favoritesResult.isError;
+
+  // Inicializar listener do stream de favoritos
+  void _initializeFavoritesListener() {
+    _favoritesSubscription = favoritesRepository.favoritesStream.listen(
+      (favoritesList) {
+        _favoritesResult = DelayedResult.fromValue(favoritesList);
+        _favoriteIds = favoritesList.map((coin) => coin.id ?? '').where((id) => id.isNotEmpty).toSet();
+        _favoritesLoaded = true;
+        debugPrint('Favoritos sincronizados via stream: ${favoritesList.length} moedas');
+        notifyListeners();
+      },
+      onError: (error) {
+        _favoritesResult = DelayedResult.fromError(Exception(error.toString()));
+        debugPrint('Erro no stream de favoritos: $error');
+        notifyListeners();
+      },
+    );
+  }
 
   // Search functionality
   Future<void> search(String query) async {
@@ -135,9 +159,8 @@ class HomeViewModel extends ChangeNotifier {
         // Você pode mostrar um snackbar ou toast aqui
       },
       (_) {
-        _favoriteIds.add(coin.id!);
+        // O stream listener já vai atualizar o estado automaticamente
         debugPrint('${coin.name} adicionado aos favoritos');
-        notifyListeners();
       },
     );
   }
@@ -152,9 +175,8 @@ class HomeViewModel extends ChangeNotifier {
         // Você pode mostrar um snackbar ou toast aqui
       },
       (_) {
-        _favoriteIds.remove(coin.id);
+        // O stream listener já vai atualizar o estado automaticamente
         debugPrint('${coin.name} removido dos favoritos');
-        notifyListeners();
       },
     );
   }
@@ -163,5 +185,11 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> refreshFavorites() async {
     _favoritesLoaded = false;
     await loadFavorites();
+  }
+
+  @override
+  void dispose() {
+    _favoritesSubscription?.cancel();
+    super.dispose();
   }
 }

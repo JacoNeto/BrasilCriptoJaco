@@ -14,26 +14,26 @@ class BrasilCriptoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BrasilCripto',
-      theme: AppTheme.theme,
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => HomeViewModel(
-              cryptoRepository: GetIt.instance<CryptoRepository>(), 
-              favoritesRepository: GetIt.instance<FavoritesRepository>(),
-            ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => HomeViewModel(
+            cryptoRepository: GetIt.instance<CryptoRepository>(), 
+            favoritesRepository: GetIt.instance<FavoritesRepository>(),
           ),
-          ChangeNotifierProvider(
-            create: (context) => FavoritesViewModel(
-              favoritesRepository: GetIt.instance<FavoritesRepository>(),
-            ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoritesViewModel(
+            favoritesRepository: GetIt.instance<FavoritesRepository>(),
           ),
-        ],
-        child: const HomeView(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'BrasilCripto',
+        theme: AppTheme.theme,
+        home: const HomeView(),
+        debugShowCheckedModeBanner: false,
       ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

@@ -3,7 +3,12 @@ import '../../../core/app_theme.dart';
 import 'market_stat_widget.dart';
 
 class CryptoHeader extends StatelessWidget {
-  const CryptoHeader({super.key});
+  final Widget? favoritesButton;
+  
+  const CryptoHeader({
+    super.key,
+    this.favoritesButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +42,16 @@ class CryptoHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'BrasilCripto',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppTheme.textPrimary,
+              Expanded(
+                child: Text(
+                  'BrasilCripto',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
               ),
+              // Botão de favoritos
+              if (favoritesButton != null) favoritesButton!,
             ],
           ),
           const SizedBox(height: 16),
