@@ -6,6 +6,8 @@ class CryptoCard extends StatelessWidget {
   final String symbol;
   final String iconUrl;
   final int? marketCapRank;
+  final bool isFavorite;
+  final VoidCallback? onFavoritePressed;
 
   const CryptoCard({
     super.key,
@@ -13,6 +15,8 @@ class CryptoCard extends StatelessWidget {
     required this.symbol,
     required this.iconUrl,
     this.marketCapRank,
+    this.isFavorite = false,
+    this.onFavoritePressed,
   });
 
   @override
@@ -137,6 +141,21 @@ class CryptoCard extends StatelessWidget {
                     ],
                   ),
                 ],
+              ),
+            ),
+            
+            // Botão de favorito
+            IconButton(
+              onPressed: onFavoritePressed,
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : AppTheme.textTertiary,
+                size: 24,
+              ),
+              padding: const EdgeInsets.all(8),
+              constraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
               ),
             ),
             

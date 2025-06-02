@@ -1,9 +1,9 @@
 import 'package:brasil_cripto/domain/repositories/crypto_repository.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../../core/intercepts/failure.dart';
-import '../../../domain/models/coin/coin_model.dart';
-import '../../services/api_service.dart';
+import '../../core/intercepts/failure.dart';
+import '../../domain/models/coin/coin_model.dart';
+import '../services/api_service.dart';
 
 class RemoteCryptoRepository implements CryptoRepository {
   final ApiService apiService;

@@ -3,15 +3,22 @@ import 'package:flutter/material.dart';
 import '../../domain/repositories/crypto_repository.dart';
 import '../../domain/models/coin/coin_model.dart';
 import '../../core/utils/delayed_result.dart';
+import '../../domain/repositories/favorites_repository.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final CryptoRepository cryptoRepository;
+  final FavoritesRepository favoritesRepository;
 
-  HomeViewModel({required this.cryptoRepository});
+  HomeViewModel({required this.cryptoRepository, required this.favoritesRepository});
 
   // Search state management using DelayedResult
   DelayedResult<List<CoinModel>> _searchResult = const DelayedResult.idle();
   String _searchQuery = '';
+
+  // Favorites state management
+  DelayedResult<List<CoinModel>> _favoritesResult = const DelayedResult.idle();
+  Set<String> _favoriteIds = <String>{};
+  bool _favoritesLoaded = false;
 
   // Getters
   DelayedResult<List<CoinModel>> get searchResult => _searchResult;
@@ -21,6 +28,12 @@ class HomeViewModel extends ChangeNotifier {
   bool get hasError => _searchResult.isError;
   bool get hasResults => _searchResult.isSuccessful && searchResults.isNotEmpty;
   String? get errorMessage => _searchResult.error?.toString();
+
+  // Favorites getters
+  DelayedResult<List<CoinModel>> get favoritesResult => _favoritesResult;
+  List<CoinModel> get favorites => _favoritesResult.value ?? [];
+  bool get isFavoritesLoading => _favoritesResult.isInProgress;
+  bool get hasFavoritesError => _favoritesResult.isError;
 
   // Search functionality
   Future<void> search(String query) async {
@@ -67,5 +80,88 @@ class HomeViewModel extends ChangeNotifier {
     Future.delayed(const Duration(milliseconds: 500), () {
       search(query);
     });
+  }
+
+  // Favorites functionality
+  Future<void> loadFavorites() async {
+    if (_favoritesLoaded) return;
+
+    _favoritesResult = const DelayedResult.inProgress();
+    notifyListeners();
+
+    final result = await favoritesRepository.getFavorites();
+    
+    result.fold(
+      (failure) {
+        _favoritesResult = DelayedResult.fromError(Exception(failure.message));
+        debugPrint('Erro ao carregar favoritos: ${failure.message}');
+      },
+      (favoriteCoins) {
+        _favoritesResult = DelayedResult.fromValue(favoriteCoins);
+        _favoriteIds = favoriteCoins.map((coin) => coin.id ?? '').where((id) => id.isNotEmpty).toSet();
+        _favoritesLoaded = true;
+        debugPrint('Favoritos carregados: ${favoriteCoins.length} moedas');
+      },
+    );
+    
+    notifyListeners();
+  }
+
+  // Verificar se uma moeda está nos favoritos
+  bool isFavorite(CoinModel coin) {
+    return _favoriteIds.contains(coin.id);
+  }
+
+  // Alternar status de favorito
+  Future<void> toggleFavorite(CoinModel coin) async {
+    if (coin.id == null) return;
+
+    final isCurrentlyFavorite = isFavorite(coin);
+    
+    if (isCurrentlyFavorite) {
+      await _removeFavorite(coin);
+    } else {
+      await _addFavorite(coin);
+    }
+  }
+
+  // Adicionar aos favoritos
+  Future<void> _addFavorite(CoinModel coin) async {
+    final result = await favoritesRepository.addFavorite(coin);
+    
+    result.fold(
+      (failure) {
+        debugPrint('Erro ao adicionar favorito: ${failure.message}');
+        // Você pode mostrar um snackbar ou toast aqui
+      },
+      (_) {
+        _favoriteIds.add(coin.id!);
+        debugPrint('${coin.name} adicionado aos favoritos');
+        notifyListeners();
+      },
+    );
+  }
+
+  // Remover dos favoritos
+  Future<void> _removeFavorite(CoinModel coin) async {
+    final result = await favoritesRepository.removeFavorite(coin);
+    
+    result.fold(
+      (failure) {
+        debugPrint('Erro ao remover favorito: ${failure.message}');
+        // Você pode mostrar um snackbar ou toast aqui
+      },
+      (_) {
+        _favoriteIds.remove(coin.id);
+        debugPrint('${coin.name} removido dos favoritos');
+        notifyListeners();
+      },
+    );
+  }
+
+  // Recarregar favoritos (útil para atualizar após mudanças)
+  Future<void> refreshFavorites() async {
+    _favoritesLoaded = false;
+    await loadFavorites();
   }
 }

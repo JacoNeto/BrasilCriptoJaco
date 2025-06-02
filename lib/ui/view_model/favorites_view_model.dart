@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/repositories/crypto_repository.dart';
+import '../../domain/repositories/favorites_repository.dart';
 
 class FavoritesViewModel extends ChangeNotifier {
-  final CryptoRepository cryptoRepository;
+  final FavoritesRepository favoritesRepository;
 
-  FavoritesViewModel({required this.cryptoRepository});
+  FavoritesViewModel({required this.favoritesRepository});
 }

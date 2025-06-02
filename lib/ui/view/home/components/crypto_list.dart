@@ -7,11 +7,15 @@ import '../../../../core/utils/delayed_result.dart';
 class CryptoList extends StatelessWidget {
   final DelayedResult<List<CoinModel>> searchResult;
   final Function(CoinModel) onCryptoTap;
+  final Function(CoinModel, bool) onFavoriteChanged;
+  final bool Function(CoinModel) isFavorite;
 
   const CryptoList({
     super.key,
     required this.searchResult,
     required this.onCryptoTap,
+    required this.onFavoriteChanged,
+    required this.isFavorite,
   });
 
   @override
@@ -121,6 +125,8 @@ class CryptoList extends StatelessWidget {
       itemCount: cryptos.length,
       itemBuilder: (context, index) {
         final crypto = cryptos[index];
+        final isCurrentlyFavorite = isFavorite(crypto);
+        
         return GestureDetector(
           onTap: () => onCryptoTap(crypto),
           child: CryptoCard(
@@ -128,6 +134,8 @@ class CryptoList extends StatelessWidget {
             symbol: crypto.symbol ?? crypto.apiSymbol ?? 'N/A',
             iconUrl: crypto.thumb ?? crypto.large ?? '',
             marketCapRank: crypto.marketCapRank,
+            isFavorite: isCurrentlyFavorite,
+            onFavoritePressed: () => onFavoriteChanged(crypto, !isCurrentlyFavorite),
           ),
         );
       },

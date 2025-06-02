@@ -1,0 +1,10 @@
+import 'package:dartz/dartz.dart';
+
+import '../../core/intercepts/failure.dart';
+import '../models/coin/coin_model.dart';
+
+abstract class FavoritesRepository {
+  Future<Either<Failure, List<CoinModel>>> getFavorites();
+  Future<Either<Failure, void>> addFavorite(CoinModel coin);
+  Future<Either<Failure, void>> removeFavorite(CoinModel coin);
+}

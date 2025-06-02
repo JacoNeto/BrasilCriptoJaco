@@ -30,6 +30,23 @@ class _HomeViewState extends State<HomeView> {
     CryptoDetailsModal.show(context, cryptoMap);
   }
 
+  void _onFavoriteChanged(CoinModel crypto, bool newFavoriteStatus) {
+    final viewModel = context.read<HomeViewModel>();
+    viewModel.toggleFavorite(crypto);
+  }
+
+  late final HomeViewModel _viewModel;
+  
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = context.read<HomeViewModel>();
+    // Carregar favoritos ao inicializar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _viewModel.loadFavorites();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +76,8 @@ class _HomeViewState extends State<HomeView> {
                   return CryptoList(
                     searchResult: viewModel.searchResult,
                     onCryptoTap: _showCryptoDetails,
+                    onFavoriteChanged: _onFavoriteChanged,
+                    isFavorite: viewModel.isFavorite,
                   );
                 },
               ),
