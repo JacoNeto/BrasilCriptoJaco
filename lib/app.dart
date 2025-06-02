@@ -1,0 +1,31 @@
+import 'package:brasil_cripto/ui/core/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
+
+import 'domain/repositories/crypto_repository.dart';
+import 'ui/view/home/home_view.dart';
+import 'ui/view_model/home_view_model.dart';
+
+class BrasilCriptoApp extends StatelessWidget {
+  const BrasilCriptoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BrasilCripto',
+      theme: AppTheme.theme,
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => HomeViewModel(
+              cryptoRepository: GetIt.instance<CryptoRepository>(),
+            ),
+          ),
+        ],
+        child: const HomeView(),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
