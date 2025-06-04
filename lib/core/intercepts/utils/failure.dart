@@ -1,4 +1,4 @@
-import 'package:brasil_cripto/core/intercepts/api_response.dart';
+import 'package:brasil_cripto/core/intercepts/utils/api_response.dart';
 
 
 // TODO: tornar essa classe abstrata

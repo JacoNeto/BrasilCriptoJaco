@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/home_view_model.dart';
-import '../../core/app_theme.dart';
 import 'components/crypto_header.dart';
 import 'components/crypto_search_field.dart';
 import 'components/crypto_sliver_list.dart';
@@ -46,57 +45,37 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CryptoAppBar(
+        favoritesCount: context.watch<HomeViewModel>().favorites.length,
+        onFavoritesPressed: _navigateToFavorites,
+      ),
       body: Consumer<HomeViewModel>(
         builder: (context, viewModel, _) {
-          return CustomScrollView(
-            slivers: [
-              // Header como SliverAppBar com gradiente único
-              SliverAppBar(
-                expandedHeight: 180,
-                floating: false,
-                pinned: true,
-                automaticallyImplyLeading: false,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: CryptoHeader(
-                    favoritesButton: Badge.count(
-                      count: viewModel.favorites.length,
-                      backgroundColor: Colors.white,
-                      textColor: AppTheme.cardColor,
-                      offset: const Offset(2, -2),
-                      child: IconButton(
-                        onPressed: _navigateToFavorites,
-                        icon: const Icon(
-                          Icons.favorite,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                        tooltip: 'Favoritos',
-                      ),
+          return SafeArea(
+            top: false, // AppBar handles top safe area
+            child: CustomScrollView(
+              slivers: [
+                // Search field as sliver
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16),
+                    child: CryptoSearchField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        viewModel.searchWithDebounce(value);
+                      },
+                      searchQuery: viewModel.searchQuery,
                     ),
                   ),
                 ),
-              ),
 
-              // Campo de busca
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: CryptoSearchField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      viewModel.searchWithDebounce(value);
-                    },
-                    searchQuery: viewModel.searchQuery,
-                  ),
+                // Crypto list (already a sliver)
+                CryptoSliverList(
+                  viewModel: viewModel,
+                  onFavoriteChanged: _onFavoriteChanged,
                 ),
-              ),
-
-              // Lista de criptomoedas como componente separado
-              CryptoSliverList(
-                viewModel: viewModel,
-                onFavoriteChanged: _onFavoriteChanged,
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),

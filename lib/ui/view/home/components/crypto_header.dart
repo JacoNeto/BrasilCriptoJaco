@@ -1,78 +1,66 @@
 import 'package:flutter/material.dart';
 import '../../../core/app_theme.dart';
-import 'market_stat_widget.dart';
 
-class CryptoHeader extends StatelessWidget {
-  final Widget? favoritesButton;
+class CryptoAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final int favoritesCount;
+  final VoidCallback onFavoritesPressed;
   
-  const CryptoHeader({
+  const CryptoAppBar({
     super.key,
-    this.favoritesButton,
+    required this.favoritesCount,
+    required this.onFavoritesPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppTheme.primaryColor,
-            AppTheme.secondaryColor,
-          ],
-        ),
-      ),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.currency_bitcoin,
-                    color: AppTheme.accentColor,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'BrasilCripto',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                ),
-                // Botão de favoritos
-                if (favoritesButton != null) favoritesButton!,
-              ],
+    return AppBar(
+      automaticallyImplyLeading: false,
+      // Material 3 scroll behavior
+      scrolledUnderElevation: 4.0,
+      surfaceTintColor: AppTheme.accentColor.withOpacity(0.1),
+      backgroundColor: AppTheme.primaryColor, // Use solid color instead of gradient
+      foregroundColor: AppTheme.textPrimary,
+      title: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppTheme.accentColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Mercado de Criptomoedas',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppTheme.textSecondary,
+            child: const Icon(
+              Icons.currency_bitcoin,
+              color: AppTheme.accentColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Text('BrasilCripto'),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: Badge.count(
+            count: favoritesCount,
+            backgroundColor: Colors.white,
+            textColor: AppTheme.cardColor,
+            offset: const Offset(2, -2),
+            child: IconButton(
+              onPressed: onFavoritesPressed,
+              icon: const Icon(
+                Icons.favorite,
+                color: Colors.white,
+                size: 24,
               ),
+              tooltip: 'Favoritos',
             ),
-            const SizedBox(height: 8),
-            const Row(
-              children: [
-                MarketStatWidget(label: 'Cap. Mercado', value: 'R\$ 8.2T'),
-                SizedBox(width: 20),
-                MarketStatWidget(label: 'Volume 24h', value: 'R\$ 89.5B'),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 } 

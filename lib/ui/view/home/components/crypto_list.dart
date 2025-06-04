@@ -121,24 +121,34 @@ class CryptoList extends StatelessWidget {
     }
 
     // Success state with results
-    return ListView.builder(
-      itemCount: cryptos.length,
-      itemBuilder: (context, index) {
-        final crypto = cryptos[index];
-        final isCurrentlyFavorite = isFavorite(crypto);
-        
-        return GestureDetector(
-          onTap: () => onCryptoTap(crypto),
-          child: CryptoCard(
-            name: crypto.name ?? 'Unknown',
-            symbol: crypto.symbol ?? crypto.apiSymbol ?? 'N/A',
-            iconUrl: crypto.thumb ?? crypto.large ?? '',
-            marketCapRank: crypto.marketCapRank,
-            isFavorite: isCurrentlyFavorite,
-            onFavoritePressed: () => onFavoriteChanged(crypto, !isCurrentlyFavorite),
+    return SliverSafeArea(
+      top: false,
+      sliver: SliverPadding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16.0,
+        ),
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final crypto = cryptos[index];
+              final isCurrentlyFavorite = isFavorite(crypto);
+              
+              return GestureDetector(
+                onTap: () => onCryptoTap(crypto),
+                child: CryptoCard(
+                  name: crypto.name ?? 'Unknown',
+                  symbol: crypto.symbol ?? crypto.apiSymbol ?? 'N/A',
+                  iconUrl: crypto.thumb ?? crypto.large ?? '',
+                  marketCapRank: crypto.marketCapRank,
+                  isFavorite: isCurrentlyFavorite,
+                  onFavoritePressed: () => onFavoriteChanged(crypto, !isCurrentlyFavorite),
+                ),
+              );
+            },
+            childCount: cryptos.length,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 } 

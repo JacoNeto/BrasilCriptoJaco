@@ -1,4 +1,4 @@
-import '../../core/intercepts/failure.dart';
+import '../../core/intercepts/utils/failure.dart';
 import '../models/coin/coin_model.dart';
 import 'package:dartz/dartz.dart';
 

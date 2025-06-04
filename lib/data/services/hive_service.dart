@@ -3,73 +3,102 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/models/coin/coin_model.dart';
 
 class HiveService {
+  static const String _coinsBoxName = 'coins';
+  Box<CoinModel>? _coinBox;
+
   Future<void> initializeHive() async {
     await Hive.initFlutter();
     Hive.registerAdapter(CoinModelAdapter());
-    await Hive.openBox<CoinModel>('coins');
+    _coinBox = await Hive.openBox<CoinModel>(_coinsBoxName);
   }
 
-  Box<CoinModel> getCoinBox() {
-    return Hive.box<CoinModel>('coins');
+  Box<CoinModel> get _box {
+    if (_coinBox == null || !_coinBox!.isOpen) {
+      throw StateError('Hive not initialized. Call initializeHive() first.');
+    }
+    return _coinBox!;
   }
 
-  // Operações de alto nível para gerenciamento de moedas
+  // Core CRUD operations with consistent error handling
   List<CoinModel> getAllCoins() {
-    return getCoinBox().values.toList();
+    try {
+      return _box.values.toList();
+    } catch (e) {
+      throw HiveServiceException('Failed to retrieve coins: $e');
+    }
   }
 
-  CoinModel? findCoinById(String? coinId) {
-    if (coinId == null) return null;
-    return getCoinBox().values.firstWhere(
-      (coin) => coin.id == coinId,
-      orElse: () => const CoinModel(),
-    );
+  CoinModel? getCoinById(String? coinId) {
+    if (coinId == null || coinId.isEmpty) return null;
+    
+    try {
+      return _box.values.cast<CoinModel?>().firstWhere(
+        (coin) => coin?.id == coinId,
+        orElse: () => null,
+      );
+    } catch (e) {
+      throw HiveServiceException('Failed to find coin with id $coinId: $e');
+    }
   }
 
   bool coinExists(String? coinId) {
-    if (coinId == null) return false;
-    final coin = findCoinById(coinId);
-    return coin?.id != null;
-  }
-
-  String generateKeyForCoin(CoinModel coin) {
-    return coin.id ?? '${coin.symbol}_${DateTime.now().millisecondsSinceEpoch}';
-  }
-
-  String? findKeyForCoin(CoinModel coin) {
-    final coinBox = getCoinBox();
-    for (final key in coinBox.keys) {
-      final storedCoin = coinBox.get(key);
-      if (storedCoin?.id == coin.id) {
-        return key.toString();
-      }
-    }
-    return null;
+    if (coinId == null || coinId.isEmpty) return false;
+    return getCoinById(coinId) != null;
   }
 
   Future<void> storeCoin(CoinModel coin) async {
-    final key = generateKeyForCoin(coin);
-    await getCoinBox().put(key, coin);
+    if (coin.id == null || coin.id!.isEmpty) {
+      throw ArgumentError('Coin must have a valid ID to be stored');
+    }
+
+    try {
+      await _box.put(coin.id!, coin);
+    } catch (e) {
+      throw HiveServiceException('Failed to store coin ${coin.id}: $e');
+    }
   }
 
   Future<bool> deleteCoinById(String? coinId) async {
-    if (coinId == null) return false;
-    
-    final coin = CoinModel(id: coinId);
-    final key = findKeyForCoin(coin);
-    
-    if (key != null) {
-      await getCoinBox().delete(key);
+    if (coinId == null || coinId.isEmpty) return false;
+
+    try {
+      if (!coinExists(coinId)) return false;
+      await _box.delete(coinId);
       return true;
+    } catch (e) {
+      throw HiveServiceException('Failed to delete coin $coinId: $e');
     }
-    return false;
   }
 
   Future<void> clearAllCoins() async {
-    await getCoinBox().clear();
+    try {
+      await _box.clear();
+    } catch (e) {
+      throw HiveServiceException('Failed to clear all coins: $e');
+    }
+  }
+
+  // Service health check
+  bool get isInitialized => _coinBox != null && _coinBox!.isOpen;
+  
+  int get coinCount => _box.length;
+
+  Future<void> dispose() async {
+    await _coinBox?.close();
+    _coinBox = null;
   }
 }
 
+// Custom exception for better error handling
+class HiveServiceException implements Exception {
+  final String message;
+  const HiveServiceException(this.message);
+  
+  @override
+  String toString() => 'HiveServiceException: $message';
+}
+
+// Separate adapter for better organization
 class CoinModelAdapter extends TypeAdapter<CoinModel> {
   @override
   final typeId = 0;

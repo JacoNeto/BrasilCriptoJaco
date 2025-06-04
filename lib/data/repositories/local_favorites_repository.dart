@@ -1,4 +1,4 @@
-import 'package:brasil_cripto/core/intercepts/failure.dart';
+import 'package:brasil_cripto/core/intercepts/utils/failure.dart';
 import 'package:brasil_cripto/data/services/hive_service.dart';
 import 'package:brasil_cripto/domain/models/coin/coin_model.dart';
 import 'package:brasil_cripto/domain/repositories/favorites_repository.dart';
@@ -25,6 +25,8 @@ class LocalFavoritesRepository implements FavoritesRepository {
     try {
       final result = await operation();
       return Right(result);
+    } on HiveServiceException catch (e) {
+      return Left(Failure('$errorContext: ${e.message}'));
     } catch (e) {
       return Left(Failure('$errorContext: ${e.toString()}'));
     }

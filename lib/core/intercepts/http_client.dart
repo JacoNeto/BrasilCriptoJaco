@@ -1,15 +1,15 @@
-import 'package:brasil_cripto/core/intercepts/api_response.dart';
-import 'package:brasil_cripto/core/intercepts/failure.dart';
+import 'package:brasil_cripto/core/intercepts/utils/api_response.dart';
+import 'package:brasil_cripto/core/intercepts/utils/failure.dart';
 import 'package:dio/dio.dart';
 
-class ApiClient {
+class HttpClient {
   final Dio _dio = Dio();
   bool _interceptorsSetup = false;
 
-  static ApiClient? _instance;
+  static HttpClient? _instance;
 
   static getInstance() {
-    _instance ??= ApiClient();
+    _instance ??= HttpClient();
     return _instance!;
   }
 

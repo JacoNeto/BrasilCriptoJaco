@@ -25,16 +25,19 @@ class AppTheme {
       scaffoldBackgroundColor: backgroundColor,
       
       // AppBar Theme
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: primaryColor,
         elevation: 0,
+        scrolledUnderElevation: 4.0,
+        surfaceTintColor: accentColor.withOpacity(0.1),
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           color: textPrimary,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: IconThemeData(color: textPrimary),
+        iconTheme: const IconThemeData(color: textPrimary),
+        foregroundColor: textPrimary,
       ),
       
       // Card Theme
@@ -123,8 +126,15 @@ class AppTheme {
         size: 24,
       ),
       
+      // Progress Indicator Theme
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: accentColor,
+        linearTrackColor: surfaceColor,
+        circularTrackColor: surfaceColor,
+      ),
+      
       colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
+        primary: accentColor,
         secondary: accentColor,
         background: backgroundColor,
         surface: surfaceColor,
@@ -132,6 +142,8 @@ class AppTheme {
         onSecondary: textPrimary,
         onBackground: textPrimary,
         onSurface: textPrimary,
+        onSurfaceVariant: textSecondary,
+        outline: textTertiary,
       ),
     );
   }

@@ -55,4 +55,26 @@ class AppFormatters {
       return '\$${price.toStringAsFixed(8)}'.replaceAll('.', ',');
     }
   }
+
+  /// Format price in compact form for charts and small spaces
+  /// Example: 45000 becomes $45K, 1200000 becomes $1.2M
+  static String formatPriceCompact(num? price) {
+    if (price == null) return 'N/A';
+    
+    if (price >= 1e12) {
+      return '\$${(price / 1e12).toStringAsFixed(1).replaceAll('.', ',')}T';
+    } else if (price >= 1e9) {
+      return '\$${(price / 1e9).toStringAsFixed(1).replaceAll('.', ',')}B';
+    } else if (price >= 1e6) {
+      return '\$${(price / 1e6).toStringAsFixed(1).replaceAll('.', ',')}M';
+    } else if (price >= 1e3) {
+      return '\$${(price / 1e3).toStringAsFixed(1).replaceAll('.', ',')}K';
+    } else if (price >= 1) {
+      return '\$${price.toStringAsFixed(0)}';
+    } else if (price >= 0.01) {
+      return '\$${price.toStringAsFixed(2)}'.replaceAll('.', ',');
+    } else {
+      return '\$${price.toStringAsFixed(4)}'.replaceAll('.', ',');
+    }
+  }
 }

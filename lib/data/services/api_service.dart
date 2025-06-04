@@ -1,15 +1,15 @@
-import '../../core/intercepts/api_client.dart';
-import '../../core/intercepts/api_response.dart';
+import '../../core/intercepts/http_client.dart';
+import '../../core/intercepts/utils/api_response.dart';
 
 class ApiService {
-  final ApiClient apiClient = ApiClient();
+  final HttpClient httpClient = HttpClient();
 
   Future<ApiResponse<Map<String, dynamic>>> search(String query) {
-    return apiClient.get('/search', queryParameters: {'query': query});
+    return httpClient.get('/search', queryParameters: {'query': query});
   }
 
   Future<ApiResponse<Map<String, dynamic>>> coinDataById(String id) {
-    return apiClient.get(
+    return httpClient.get(
       '/coins/$id',
       queryParameters: {
         'localization': false,

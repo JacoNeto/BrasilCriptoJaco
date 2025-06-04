@@ -177,6 +177,7 @@ class _FavoritesViewState extends State<FavoritesView> {
               onRefresh: viewModel.refreshFavorites,
               child: ListView.builder(
                 itemCount: viewModel.favorites.length,
+                padding: const EdgeInsets.only(bottom: 60),
                 itemBuilder: (context, index) {
                   final coin = viewModel.favorites[index];
                   return Column(
