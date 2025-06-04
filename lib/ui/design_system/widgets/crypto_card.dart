@@ -55,7 +55,7 @@ class CryptoCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Ícone da crypto
+              // crypto icon
               Container(
                 width: 48,
                 height: 48,
@@ -107,7 +107,7 @@ class CryptoCard extends StatelessWidget {
               ),
               const SizedBox(width: 16),
 
-              // Informações da crypto
+              // crypto information
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +176,7 @@ class CryptoCard extends StatelessWidget {
                 ),
               ),
 
-              // Botão de favorito
+              // favorite button
               IconButton(
                 onPressed: onFavoritePressed,
                 icon: Icon(
@@ -188,7 +188,7 @@ class CryptoCard extends StatelessWidget {
                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               ),
 
-              // Indicador de que é clicável (só mostra se tem ID)
+              // clickable indicator (only shows if there is an ID)
               if (id != null)
                 Icon(
                   Icons.arrow_forward_ios,

@@ -29,16 +29,13 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-
-  late final HomeViewModel _viewModel;
   
   @override
   void initState() {
     super.initState();
-    _viewModel = context.read<HomeViewModel>();
-    // Carregar favoritos ao inicializar
+    // Load favorites on initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _viewModel.loadFavorites();
+      Provider.of<HomeViewModel>(context, listen: false).refreshFavorites();
     });
   }
 

@@ -8,7 +8,7 @@ import 'dart:async';
 class LocalFavoritesRepository implements FavoritesRepository {
   final HiveService hiveService;
   
-  // Stream controller para notificar mudanças
+  // Stream controller to notify changes
   final StreamController<List<CoinModel>> _favoritesController = 
       StreamController<List<CoinModel>>.broadcast();
 
@@ -17,7 +17,7 @@ class LocalFavoritesRepository implements FavoritesRepository {
   @override
   Stream<List<CoinModel>> get favoritesStream => _favoritesController.stream;
 
-  // DRY: Wrapper comum para tratamento de erros
+  // DRY: Common wrapper for error handling
   Future<Either<Failure, T>> _handleOperation<T>(
     Future<T> Function() operation,
     String errorContext,
@@ -32,13 +32,13 @@ class LocalFavoritesRepository implements FavoritesRepository {
     }
   }
 
-  // Método auxiliar para emitir a lista atualizada de favoritos
+  // Helper method to emit updated favorites list
   Future<void> _emitUpdatedFavorites() async {
     try {
       final favorites = hiveService.getAllCoins();
       _favoritesController.add(favorites);
     } catch (e) {
-      // Em caso de erro, emitir lista vazia
+      // In case of error, emit empty list
       _favoritesController.add([]);
     }
   }
@@ -48,11 +48,11 @@ class LocalFavoritesRepository implements FavoritesRepository {
     return _handleOperation(
       () async {
         final favorites = hiveService.getAllCoins();
-        // Emitir no stream também (para casos onde o stream ainda não foi inicializado)
+        // Also emit to stream (for cases where stream hasn't been initialized yet)
         _favoritesController.add(favorites);
         return favorites;
       },
-      'Falha ao buscar favoritos',
+      'Failed to fetch favorites',
     );
   }
 
@@ -61,14 +61,14 @@ class LocalFavoritesRepository implements FavoritesRepository {
     final result = await _handleOperation(
       () async {
         if (hiveService.coinExists(coin.id)) {
-          throw Exception('Moeda já está nos favoritos');
+          throw Exception('Coin is already in favorites');
         }
         await hiveService.storeCoin(coin);
       },
-      'Falha ao adicionar favorito',
+      'Failed to add favorite',
     );
     
-    // Emitir lista atualizada independentemente do resultado
+    // Emit updated list regardless of result
     if (result.isRight()) {
       await _emitUpdatedFavorites();
     }
@@ -82,13 +82,13 @@ class LocalFavoritesRepository implements FavoritesRepository {
       () async {
         final deleted = await hiveService.deleteCoinById(coin.id);
         if (!deleted) {
-          throw Exception('Moeda não encontrada nos favoritos');
+          throw Exception('Coin not found in favorites');
         }
       },
-      'Falha ao remover favorito',
+      'Failed to remove favorite',
     );
     
-    // Emitir lista atualizada independentemente do resultado
+    // Emit updated list regardless of result
     if (result.isRight()) {
       await _emitUpdatedFavorites();
     }
@@ -96,7 +96,7 @@ class LocalFavoritesRepository implements FavoritesRepository {
     return result;
   }
 
-  // Método auxiliar para verificar se uma moeda já está favoritada
+  // Helper method to check if a coin is already favorited
   Future<bool> isFavorite(CoinModel coin) async {
     try {
       return hiveService.coinExists(coin.id);
@@ -105,15 +105,15 @@ class LocalFavoritesRepository implements FavoritesRepository {
     }
   }
 
-  // Método auxiliar para limpar todos os favoritos (útil para testes ou preferência do usuário)
+  // Helper method to clear all favorites (useful for tests or user preference)
   @override
   Future<Either<Failure, void>> clearAllFavorites() async {
     final result = await _handleOperation(
       () async => await hiveService.clearAllCoins(),
-      'Falha ao limpar favoritos',
+      'Failed to clear favorites',
     );
     
-    // Emitir lista vazia independentemente do resultado
+    // Emit empty list regardless of result
     if (result.isRight()) {
       _favoritesController.add([]);
     }
@@ -121,7 +121,7 @@ class LocalFavoritesRepository implements FavoritesRepository {
     return result;
   }
 
-  // Dispose do stream controller
+  // Dispose stream controller
   void dispose() {
     _favoritesController.close();
   }

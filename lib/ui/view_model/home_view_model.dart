@@ -23,10 +23,10 @@ class HomeViewModel extends ChangeNotifier {
   Set<String> _favoriteIds = <String>{};
   bool _favoritesLoaded = false;
   
-  // Stream subscription para ouvir mudanças nos favoritos
+  // Stream subscription to listen for favorites changes
   StreamSubscription<List<CoinModel>>? _favoritesSubscription;
   
-  // Debounce timer para controlar chamadas da API
+  // Debounce timer to control API calls
   Timer? _debounceTimer;
 
   // Getters
@@ -44,19 +44,19 @@ class HomeViewModel extends ChangeNotifier {
   bool get isFavoritesLoading => _favoritesResult.isInProgress;
   bool get hasFavoritesError => _favoritesResult.isError;
 
-  // Inicializar listener do stream de favoritos
+  // Initialize favorites listener
   void _initializeFavoritesListener() {
     _favoritesSubscription = favoritesRepository.favoritesStream.listen(
       (favoritesList) {
         _favoritesResult = DelayedResult.fromValue(favoritesList);
         _favoriteIds = favoritesList.map((coin) => coin.id ?? '').where((id) => id.isNotEmpty).toSet();
         _favoritesLoaded = true;
-        debugPrint('Favoritos sincronizados via stream: ${favoritesList.length} moedas');
+        debugPrint('Favorites synchronized via stream: ${favoritesList.length} coins');
         notifyListeners();
       },
       onError: (error) {
         _favoritesResult = DelayedResult.fromError(Exception(error.toString()));
-        debugPrint('Erro no stream de favoritos: $error');
+        debugPrint('Error in favorites stream: $error');
         notifyListeners();
       },
     );
@@ -129,70 +129,56 @@ class HomeViewModel extends ChangeNotifier {
     result.fold(
       (failure) {
         _favoritesResult = DelayedResult.fromError(Exception(failure.message));
-        debugPrint('Erro ao carregar favoritos: ${failure.message}');
+        debugPrint('Error loading favorites: ${failure.message}');
       },
       (favoriteCoins) {
         _favoritesResult = DelayedResult.fromValue(favoriteCoins);
         _favoriteIds = favoriteCoins.map((coin) => coin.id ?? '').where((id) => id.isNotEmpty).toSet();
         _favoritesLoaded = true;
-        debugPrint('Favoritos carregados: ${favoriteCoins.length} moedas');
+        debugPrint('Favorites loaded: ${favoriteCoins.length} coins');
       },
     );
     
     notifyListeners();
   }
 
-  // Verificar se uma moeda está nos favoritos
+  // Check if a coin is in favorites
   bool isFavorite(CoinModel coin) {
     return _favoriteIds.contains(coin.id);
   }
 
-  // Alternar status de favorito
-  Future<void> toggleFavorite(CoinModel coin) async {
-    if (coin.id == null) return;
-
-    final isCurrentlyFavorite = isFavorite(coin);
-    
-    if (isCurrentlyFavorite) {
-      await _removeFavorite(coin);
+  // Toggle favorite
+  Future<void> toggleFavorite(CoinModel crypto) async {
+    if (isFavorite(crypto)) {
+      // Remove from favorites
+      final result = await favoritesRepository.removeFavorite(crypto);
+      result.fold(
+        (failure) {
+          // You can show a snackbar or toast here
+          debugPrint('Error removing favorite: ${failure.message}');
+        },
+        (_) {
+          // The stream listener will automatically update the state
+          debugPrint('Favorite removed successfully');
+        },
+      );
     } else {
-      await _addFavorite(coin);
+      // Add to favorites
+      final result = await favoritesRepository.addFavorite(crypto);
+      result.fold(
+        (failure) {
+          // You can show a snackbar or toast here
+          debugPrint('Error adding favorite: ${failure.message}');
+        },
+        (_) {
+          // The stream listener will automatically update the state
+          debugPrint('Favorite added successfully');
+        },
+      );
     }
   }
 
-  // Adicionar aos favoritos
-  Future<void> _addFavorite(CoinModel coin) async {
-    final result = await favoritesRepository.addFavorite(coin);
-    
-    result.fold(
-      (failure) {
-        debugPrint('Erro ao adicionar favorito: ${failure.message}');
-        // Você pode mostrar um snackbar ou toast aqui
-      },
-      (_) {
-        // O stream listener já vai atualizar o estado automaticamente
-        debugPrint('${coin.name} adicionado aos favoritos');
-      },
-    );
-  }
-
-  // Remover dos favoritos
-  Future<void> _removeFavorite(CoinModel coin) async {
-    final result = await favoritesRepository.removeFavorite(coin);
-    
-    result.fold(
-      (failure) {
-        debugPrint('Erro ao remover favorito: ${failure.message}');
-        // Você pode mostrar um snackbar ou toast aqui
-      },
-      (_) {
-        // O stream listener já vai atualizar o estado automaticamente
-        debugPrint('${coin.name} removido dos favoritos');
-      },
-    );
-  }
-
-  // Recarregar favoritos (útil para atualizar após mudanças)
+  // Reload favorites (useful for updating after changes)
   Future<void> refreshFavorites() async {
     _favoritesLoaded = false;
     await loadFavorites();

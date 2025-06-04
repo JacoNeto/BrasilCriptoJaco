@@ -9,6 +9,6 @@ abstract class FavoritesRepository {
   Future<Either<Failure, void>> removeFavorite(CoinModel coin);
   Future<Either<Failure, void>> clearAllFavorites();
   
-  // Stream para notificar mudanças nos favoritos
+  // Stream to notify favorites changes
   Stream<List<CoinModel>> get favoritesStream;
 }

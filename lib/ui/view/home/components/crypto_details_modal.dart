@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../design_system/app_theme.dart';
 import '../../../design_system/widgets/crypto_chart.dart';
+import '../../../../core/utils/app_formatters.dart';
 import 'detail_stat_widget.dart';
 
 class CryptoDetailsModal extends StatelessWidget {
@@ -32,7 +33,7 @@ class CryptoDetailsModal extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
-          // Título
+          // Title
           Row(
             children: [
               Container(
@@ -69,11 +70,11 @@ class CryptoDetailsModal extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '\$${crypto['price'].toStringAsFixed(2)}',
+                    AppFormatters.formatPrice(crypto['price']),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   Text(
-                    '${crypto['change'] >= 0 ? '+' : ''}${crypto['change'].toStringAsFixed(2)}%',
+                    AppFormatters.formatPercentageChange(crypto['change']?.toDouble()),
                     style: TextStyle(
                       color: crypto['change'] >= 0 
                           ? AppTheme.profitColor 
@@ -88,9 +89,9 @@ class CryptoDetailsModal extends StatelessWidget {
           
           const SizedBox(height: 24),
           
-          // Gráfico
+          // Chart
           Text(
-            'Desempenho (7 dias)',
+            'Performance (7 days)',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
@@ -101,13 +102,13 @@ class CryptoDetailsModal extends StatelessWidget {
           
           const SizedBox(height: 24),
           
-          // Informações adicionais
+          // Additional information
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               DetailStatWidget(label: 'Volume 24h', value: crypto['volume']),
-              const DetailStatWidget(label: 'Cap. Mercado', value: '2.1T'),
-              const DetailStatWidget(label: 'Fornecimento', value: '19.5M'),
+              const DetailStatWidget(label: 'Market Cap', value: '2.1T'),
+              const DetailStatWidget(label: 'Supply', value: '19.5M'),
             ],
           ),
         ],

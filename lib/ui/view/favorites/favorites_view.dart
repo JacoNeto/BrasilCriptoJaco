@@ -19,7 +19,7 @@ class _FavoritesViewState extends State<FavoritesView> {
   void initState() {
     super.initState();
     _viewModel = context.read<FavoritesViewModel>();
-    // Carregar favoritos ao inicializar
+    // Load favorites on initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _viewModel.loadFavorites();
     });

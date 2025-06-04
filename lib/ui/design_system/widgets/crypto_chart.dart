@@ -64,7 +64,7 @@ class ChartPainter extends CustomPainter {
 
     canvas.drawPath(path, paint);
 
-    // Desenhar área sob a curva
+    // Draw area under the curve
     final areaPaint = Paint()
       ..color = color.withOpacity(0.1)
       ..style = PaintingStyle.fill;

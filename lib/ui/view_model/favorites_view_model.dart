@@ -12,10 +12,10 @@ class FavoritesViewModel extends ChangeNotifier {
     _initializeFavoritesListener();
   }
 
-  // Estado dos favoritos
+  // favorites result
   DelayedResult<List<CoinModel>> _favoritesResult = const DelayedResult.idle();
   
-  // Stream subscription para ouvir mudanças nos favoritos
+  // Stream subscription to listen for favorites changes
   StreamSubscription<List<CoinModel>>? _favoritesSubscription;
 
   // Getters
@@ -27,7 +27,7 @@ class FavoritesViewModel extends ChangeNotifier {
   String? get errorMessage => _favoritesResult.error?.toString();
   int get favoritesCount => favorites.length;
 
-  // Inicializar listener do stream de favoritos
+  // initialize favorites listener
   void _initializeFavoritesListener() {
     _favoritesSubscription = favoritesRepository.favoritesStream.listen(
       (favoritesList) {
@@ -43,7 +43,7 @@ class FavoritesViewModel extends ChangeNotifier {
     );
   }
 
-  // Carregar favoritos
+  // load favorites
   Future<void> loadFavorites() async {
     _favoritesResult = const DelayedResult.inProgress();
     notifyListeners();
@@ -53,18 +53,18 @@ class FavoritesViewModel extends ChangeNotifier {
     result.fold(
       (failure) {
         _favoritesResult = DelayedResult.fromError(Exception(failure.message));
-        debugPrint('Erro ao carregar favoritos: ${failure.message}');
+        debugPrint('Error loading favorites: ${failure.message}');
       },
-      (favoriteCoins) {
-        _favoritesResult = DelayedResult.fromValue(favoriteCoins);
-        debugPrint('Favoritos carregados: ${favoriteCoins.length} moedas');
+      (favorites) {
+        _favoritesResult = DelayedResult.fromValue(favorites);
+        debugPrint('Favorites loaded: ${favorites.length} coins');
       },
     );
     
     notifyListeners();
   }
 
-  // Remover favorito
+  // remove favorite
   Future<void> removeFavorite(CoinModel coin) async {
     final result = await favoritesRepository.removeFavorite(coin);
     
@@ -73,13 +73,13 @@ class FavoritesViewModel extends ChangeNotifier {
         debugPrint('Erro ao remover favorito: ${failure.message}');
       },
       (_) {
-        // O stream listener já vai atualizar o estado automaticamente
+        // The stream listener will automatically update the state
         debugPrint('${coin.name} removido dos favoritos');
       },
     );
   }
 
-  // Limpar todos os favoritos
+  // clear all favorites
   Future<void> clearAllFavorites() async {
     final result = await favoritesRepository.clearAllFavorites();
     
@@ -88,13 +88,13 @@ class FavoritesViewModel extends ChangeNotifier {
         debugPrint('Erro ao limpar favoritos: ${failure.message}');
       },
       (_) {
-        // O stream listener já vai atualizar o estado automaticamente
+        // The stream listener will automatically update the state
         debugPrint('Todos os favoritos foram removidos');
       },
     );
   }
 
-  // Recarregar favoritos
+  // reload favorites
   Future<void> refreshFavorites() async {
     await loadFavorites();
   }

@@ -27,7 +27,7 @@ class CryptoDetailsViewModel extends ChangeNotifier {
   bool get hasData => _coinDetailsResult.isSuccessful;
   String? get errorMessage => _coinDetailsResult.error?.toString();
 
-  // Carregar detalhes da moeda
+  // Load coin details
   Future<void> loadCoinDetails() async {
     _coinDetailsResult = const DelayedResult.inProgress();
     notifyListeners();
@@ -37,94 +37,59 @@ class CryptoDetailsViewModel extends ChangeNotifier {
     result.fold(
       (failure) {
         _coinDetailsResult = DelayedResult.fromError(Exception(failure.message));
-        debugPrint('Erro ao carregar detalhes da moeda: ${failure.message}');
+        debugPrint('Error loading coin details: ${failure.message}');
       },
       (coinData) {
         _coinDetailsResult = DelayedResult.fromValue(coinData);
-        debugPrint('Detalhes da moeda carregados: ${coinData.name}');
+        debugPrint('Coin details loaded: ${coinData.name}');
       },
     );
     
     notifyListeners();
   }
 
-  // Recarregar detalhes
+  // Reload details
   Future<void> refreshCoinDetails() async {
     await loadCoinDetails();
   }
 
-  // Obter preço em USD formatado
+  // Get formatted USD price
   String get currentPriceUSD {
     final price = coinData?.marketData.currentPrice['usd'];
     return AppFormatters.formatPrice(price as num?);
   }
 
-  // Obter mudança de preço em 24h formatada
+  // Get formatted 24h price change
   String get priceChange24h {
     final change = coinData?.marketData.priceChange24h;
-    if (change == null) return 'N/A';
-    final sign = change >= 0 ? '+' : '';
-    return '$sign${change.toStringAsFixed(2)}%';
+    return AppFormatters.formatPercentageChange(change);
   }
 
-  // Verificar se o preço subiu ou desceu
+  // Check if price went up or down
   bool get isPriceUp {
     final change = coinData?.marketData.priceChange24h;
     return change != null && change >= 0;
   }
 
-  // Obter market cap formatado
+  // Get formatted market cap
   String get marketCapUSD {
     final marketCap = coinData?.marketData.marketCap['usd'];
-    if (marketCap == null) return 'N/A';
-    
-    if (marketCap >= 1e12) {
-      return '\$${(marketCap / 1e12).toStringAsFixed(2).replaceAll('.', ',')}T';
-    } else if (marketCap >= 1e9) {
-      return '\$${(marketCap / 1e9).toStringAsFixed(2).replaceAll('.', ',')}B';
-    } else if (marketCap >= 1e6) {
-      return '\$${(marketCap / 1e6).toStringAsFixed(2).replaceAll('.', ',')}M';
-    } else {
-      return AppFormatters.formatPrice(marketCap);
-    }
+    return AppFormatters.formatMarketValue(marketCap);
   }
 
-  // Obter volume formatado
+  // Get formatted volume
   String get volumeUSD {
     final volume = coinData?.marketData.totalVolume['usd'];
-    if (volume == null) return 'N/A';
-    
-    if (volume >= 1e12) {
-      return '\$${(volume / 1e12).toStringAsFixed(2).replaceAll('.', ',')}T';
-    } else if (volume >= 1e9) {
-      return '\$${(volume / 1e9).toStringAsFixed(2).replaceAll('.', ',')}B';
-    } else if (volume >= 1e6) {
-      return '\$${(volume / 1e6).toStringAsFixed(2).replaceAll('.', ',')}M';
-    } else {
-      return AppFormatters.formatPrice(volume);
-    }
+    return AppFormatters.formatMarketValue(volume);
   }
 
-  // Obter descrição em inglês
+  // Get English description
   String get description {
     final desc = coinData?.description['en'];
-    if (desc == null || desc.isEmpty) return 'Descrição não disponível';
-    
-    // Remover tags HTML básicas e quebras de linha
-    String cleanDesc = desc.toString()
-        .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll(r'\r\n', '\n')
-        .replaceAll(r'\n\n', '\n');
-    
-    // Limitar a descrição a aproximadamente 500 caracteres
-    if (cleanDesc.length > 500) {
-      cleanDesc = '${cleanDesc.substring(0, 500)}...';
-    }
-    
-    return cleanDesc;
+    return AppFormatters.cleanAndLimitText(desc);
   }
 
-  // Obter dados do gráfico (sparkline 7 dias)
+  // Get chart data (7-day sparkline)
   List<double> get chartData {
     return coinData?.marketData.sparkline7d.price ?? [];
   }

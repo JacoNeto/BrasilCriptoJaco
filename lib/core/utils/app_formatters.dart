@@ -77,4 +77,48 @@ class AppFormatters {
       return '\$${price.toStringAsFixed(4)}'.replaceAll('.', ',');
     }
   }
+
+  /// Format percentage change with proper sign and styling
+  /// Example: 5.25 becomes "+5.25%", -2.15 becomes "-2.15%"
+  static String formatPercentageChange(double? change) {
+    if (change == null) return 'N/A';
+    final sign = change >= 0 ? '+' : '';
+    return '$sign${change.toStringAsFixed(2)}%';
+  }
+
+  /// Format large market values (market cap, volume) with proper suffixes
+  /// Example: 1200000000 becomes $1.20B, using 2 decimal places for precision
+  static String formatMarketValue(num? value) {
+    if (value == null) return 'N/A';
+    
+    if (value >= 1e12) {
+      return '\$${(value / 1e12).toStringAsFixed(2).replaceAll('.', ',')}T';
+    } else if (value >= 1e9) {
+      return '\$${(value / 1e9).toStringAsFixed(2).replaceAll('.', ',')}B';
+    } else if (value >= 1e6) {
+      return '\$${(value / 1e6).toStringAsFixed(2).replaceAll('.', ',')}M';
+    } else {
+      return formatPrice(value);
+    }
+  }
+
+  /// Clean HTML tags and limit text to specified character count
+  /// Useful for cleaning API descriptions and keeping them concise
+  static String cleanAndLimitText(String? text, {int maxLength = 500}) {
+    if (text == null || text.isEmpty) return 'Description not available';
+    
+    // Remove basic HTML tags and line breaks
+    String cleanText = text
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll(r'\r\n', '\n')
+        .replaceAll(r'\n\n', '\n')
+        .trim();
+    
+    // Limit to specified character count
+    if (cleanText.length > maxLength) {
+      cleanText = '${cleanText.substring(0, maxLength)}...';
+    }
+    
+    return cleanText;
+  }
 }

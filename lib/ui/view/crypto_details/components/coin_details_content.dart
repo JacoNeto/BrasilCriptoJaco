@@ -114,30 +114,30 @@ class CoinDetailsContent extends StatelessWidget {
               ),
             ),
 
-            // Conteúdo principal
+            // Main content
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Seção de preço
+                    // Price section
                     PriceSection(viewModel: viewModel),
                     const SizedBox(height: 24),
 
-                    // Gráfico
+                    // Chart
                     ChartSection(viewModel: viewModel),
                     const SizedBox(height: 24),
 
-                    // Estatísticas de mercado
+                    // Market statistics
                     MarketStatsSection(viewModel: viewModel),
                     const SizedBox(height: 24),
 
-                    // Descrição
+                    // Description
                     DescriptionSection(viewModel: viewModel),
                     
-                    // Espaço extra no final
-                    const SizedBox(height: 32),
+                    // Extra space at the end
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
