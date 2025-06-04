@@ -49,7 +49,7 @@ class HiveService {
   Future<void> storeCoin(CoinModel coin) async {
     if (coin.id == null || coin.id!.isEmpty) {
       throw ArgumentError('Coin must have a valid ID to be stored');
-    }
+  }
 
     try {
       await _box.put(coin.id!, coin);
