@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/favorites_view_model.dart';
-import '../../core/widgets/crypto_card.dart';
-import '../../core/app_theme.dart';
+import '../../design_system/widgets/crypto_card.dart';
+import '../../design_system/app_theme.dart';
 import '../../../domain/models/coin/coin_model.dart';
 
 class FavoritesView extends StatefulWidget {

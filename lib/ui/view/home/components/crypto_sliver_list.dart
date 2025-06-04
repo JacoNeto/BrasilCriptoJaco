@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
-import '../../../core/widgets/crypto_card.dart';
+import '../../../design_system/app_theme.dart';
+import '../../../design_system/widgets/crypto_card.dart';
 import '../../../view_model/home_view_model.dart';
 import '../../../../domain/models/coin/coin_model.dart';
 

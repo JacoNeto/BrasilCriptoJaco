@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 import '../../../view_model/crypto_details_view_model.dart';
 
 class PriceSection extends StatelessWidget {

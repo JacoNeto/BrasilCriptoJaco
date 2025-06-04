@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 
 class DetailStatWidget extends StatelessWidget {
   final String label;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 
 class CryptoDetailsErrorView extends StatelessWidget {
   final String errorMessage;

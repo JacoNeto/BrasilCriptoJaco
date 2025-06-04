@@ -1,5 +1,5 @@
 import 'package:brasil_cripto/domain/repositories/favorites_repository.dart';
-import 'package:brasil_cripto/ui/core/app_theme.dart';
+import 'package:brasil_cripto/ui/design_system/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/utils/app_formatters.dart';
 import '../../../view_model/crypto_details_view_model.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 
 class ChartSection extends StatelessWidget {
   final CryptoDetailsViewModel viewModel;
@@ -25,6 +25,11 @@ class ChartSection extends StatelessWidget {
     final maxY = chartData.reduce((a, b) => a > b ? a : b);
     final padding = (maxY - minY) * 0.1; // 10% padding
 
+    // Calculate 7-day trend from chart data (first vs last value)
+    final firstPrice = chartData.first;
+    final lastPrice = chartData.last;
+    final is7DayUp = lastPrice >= firstPrice;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 20.0, 20.0, 10.0),
@@ -44,16 +49,16 @@ class ChartSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.1),
+                    color: (is7DayUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        viewModel.isPriceUp ? Icons.trending_up : Icons.trending_down,
+                        is7DayUp ? Icons.trending_up : Icons.trending_down,
                         size: 16,
-                        color: viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor,
+                        color: is7DayUp ? AppTheme.profitColor : AppTheme.lossColor,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -61,7 +66,7 @@ class ChartSection extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor,
+                          color: is7DayUp ? AppTheme.profitColor : AppTheme.lossColor,
                         ),
                       ),
                     ],
@@ -182,7 +187,7 @@ class ChartSection extends StatelessWidget {
                       tooltipPadding: const EdgeInsets.all(12),
                       tooltipMargin: 8,
                       tooltipBorder: BorderSide(
-                        color: (viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.3),
+                        color: (is7DayUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.3),
                         width: 1,
                       ),
                       getTooltipItems: (touchedSpots) {
@@ -214,7 +219,7 @@ class ChartSection extends StatelessWidget {
                       }).toList(),
                       isCurved: true,
                       curveSmoothness: 0.35,
-                      color: viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor,
+                      color: is7DayUp ? AppTheme.profitColor : AppTheme.lossColor,
                       barWidth: 3,
                       dotData: FlDotData(
                         show: true,
@@ -232,8 +237,8 @@ class ChartSection extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            (viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.15),
-                            (viewModel.isPriceUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.05),
+                            (is7DayUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.15),
+                            (is7DayUp ? AppTheme.profitColor : AppTheme.lossColor).withOpacity(0.05),
                             Colors.transparent,
                           ],
                         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
-import '../../../core/widgets/crypto_chart.dart';
+import '../../../design_system/app_theme.dart';
+import '../../../design_system/widgets/crypto_chart.dart';
 import 'detail_stat_widget.dart';
 
 class CryptoDetailsModal extends StatelessWidget {

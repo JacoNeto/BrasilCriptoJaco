@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 
 class StatItem extends StatelessWidget {
   final String title;

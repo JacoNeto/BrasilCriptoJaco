@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_theme.dart';
+import '../../../design_system/app_theme.dart';
 
 class CryptoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int favoritesCount;
