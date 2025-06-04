@@ -104,6 +104,7 @@ class LocalFavoritesRepository implements FavoritesRepository {
   }
 
   // Método auxiliar para limpar todos os favoritos (útil para testes ou preferência do usuário)
+  @override
   Future<Either<Failure, void>> clearAllFavorites() async {
     final result = await _handleOperation(
       () async => await hiveService.clearAllCoins(),

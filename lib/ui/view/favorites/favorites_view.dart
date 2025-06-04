@@ -184,6 +184,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                       if (index == 0)
                       const SizedBox(height: 10),
                       CryptoCard(
+                        id: coin.id,
                         name: coin.name ?? 'Unknown',
                         symbol: coin.symbol ?? coin.apiSymbol ?? 'N/A',
                         iconUrl: coin.thumb ?? coin.large ?? '',
