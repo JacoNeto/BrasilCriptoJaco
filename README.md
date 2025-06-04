@@ -66,22 +66,38 @@ lib/
 │   ├── models/                # Data models
 │   └── repositories/          # Repository interfaces
 └── ui/
-    ├── view/                  # Screens
-    ├── view_model/            # State management
-    └── core/                  # Reusable UI components
+    ├── view/                  # Screens (Views)
+    ├── view_model/            # ViewModels for state management
+    └── design_system/         # Reusable UI components and design system
 ```
 
 ## Architecture
 
-This project follows **Clean Architecture** principles with:
+This project implements **MVVM (Model-View-ViewModel)** architecture with **Clean Architecture** principles and **SOLID** design patterns:
 
-- **Domain Layer**: Business logic and entities
-- **Data Layer**: Repository implementations and data sources
-- **Presentation Layer**: UI and state management
+### 🏗️ **MVVM Pattern**
+- **Model**: Domain entities and business logic (`domain/` layer)
+- **View**: UI screens and widgets (`ui/view/`)  
+- **ViewModel**: State management and UI logic (`ui/view_model/`)
 
-**State Management**: Provider pattern with reactive streams
-**Local Storage**: Hive for favorites persistence
-**API Integration**: HTTP with proper error handling
+### 🎯 **Multilayer Architecture**
+- **Presentation Layer** (`ui/`): Views, ViewModels, and Design System
+- **Domain Layer** (`domain/`): Business logic, entities, and repository interfaces
+- **Data Layer** (`data/`): Repository implementations, API services, and local storage
+
+### 💎 **SOLID Principles Applied**
+- **Single Responsibility**: Each class has one reason to change
+- **Open/Closed**: Extensions via interfaces without modifying existing code
+- **Liskov Substitution**: Repository abstractions allow implementation swapping
+- **Interface Segregation**: Small, focused repository interfaces
+- **Dependency Inversion**: High-level modules depend on abstractions
+
+### 🔧 **Technical Implementation**
+- **State Management**: Provider pattern with reactive streams
+- **Local Storage**: Hive for favorites persistence  
+- **API Integration**: HTTP with proper error handling using Either pattern
+- **Reactive Architecture**: Stream-based cross-widget synchronization
+- **Error Handling**: Centralized failure management with DRY principles
 
 ## Contributing
 
