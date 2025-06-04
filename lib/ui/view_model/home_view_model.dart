@@ -25,6 +25,9 @@ class HomeViewModel extends ChangeNotifier {
   
   // Stream subscription para ouvir mudanças nos favoritos
   StreamSubscription<List<CoinModel>>? _favoritesSubscription;
+  
+  // Debounce timer para controlar chamadas da API
+  Timer? _debounceTimer;
 
   // Getters
   DelayedResult<List<CoinModel>> get searchResult => _searchResult;
@@ -100,8 +103,16 @@ class HomeViewModel extends ChangeNotifier {
 
   // Debounced search - useful for search as you type
   void searchWithDebounce(String query) {
-    // Cancel any existing timer if needed
-    Future.delayed(const Duration(milliseconds: 500), () {
+    // Cancel any existing timer to prevent multiple API calls
+    _debounceTimer?.cancel();
+    
+    if (query.trim().isEmpty) {
+      _clearSearch();
+      return;
+    }
+    
+    // Start new timer - only executes if user stops typing for 800ms
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       search(query);
     });
   }
@@ -190,6 +201,7 @@ class HomeViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _favoritesSubscription?.cancel();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 }

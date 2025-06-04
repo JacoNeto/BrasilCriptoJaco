@@ -61,7 +61,7 @@ class _HomeViewState extends State<HomeView> {
                     favoritesButton: Badge.count(
                       count: viewModel.favorites.length,
                       backgroundColor: Colors.white,
-                      textColor: AppTheme.accentColor,
+                      textColor: AppTheme.cardColor,
                       offset: const Offset(2, -2),
                       child: IconButton(
                         onPressed: _navigateToFavorites,

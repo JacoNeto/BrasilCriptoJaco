@@ -20,7 +20,8 @@ class CryptoSliverList extends StatelessWidget {
 
     // Loading state
     if (searchResult.isInProgress) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
+        hasScrollBody: false,
         child: Center(
           child: CircularProgressIndicator(),
         ),
@@ -30,31 +31,35 @@ class CryptoSliverList extends StatelessWidget {
     // Error state
     if (searchResult.isError) {
       return SliverFillRemaining(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppTheme.textTertiary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Erro ao buscar criptomoedas',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                searchResult.error?.toString() ?? 'Erro desconhecido',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        hasScrollBody: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
                   color: AppTheme.textTertiary,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  'Erro ao buscar criptomoedas',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  searchResult.error?.toString() ?? 'Erro desconhecido',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -63,31 +68,35 @@ class CryptoSliverList extends StatelessWidget {
     // Idle state (when app first opens)
     if (searchResult.isIdle) {
       return SliverFillRemaining(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.search,
-                size: 64,
-                color: AppTheme.textTertiary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Pesquise por uma criptomoeda',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Digite o nome ou símbolo de uma moeda para começar',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        hasScrollBody: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 64,
                   color: AppTheme.textTertiary,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  'Pesquise por uma criptomoeda',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Digite o nome ou símbolo de uma moeda para começar',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -97,30 +106,35 @@ class CryptoSliverList extends StatelessWidget {
     final cryptos = searchResult.value ?? [];
     if (cryptos.isEmpty) {
       return SliverFillRemaining(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.search_off,
-                size: 64,
-                color: AppTheme.textTertiary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Nenhuma criptomoeda encontrada',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tente pesquisar por outro nome ou símbolo',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        hasScrollBody: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.search_off,
+                  size: 64,
                   color: AppTheme.textTertiary,
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  'Nenhuma criptomoeda encontrada',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Tente pesquisar por outro nome ou símbolo',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       );

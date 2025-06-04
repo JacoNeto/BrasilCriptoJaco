@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../core/utils/app_formatters.dart';
 import '../../../view_model/crypto_details_view_model.dart';
 import '../../../core/app_theme.dart';
 
@@ -10,46 +11,6 @@ class ChartSection extends StatelessWidget {
     super.key,
     required this.viewModel,
   });
-
-  // Format price value for tooltip
-  String _formatPrice(double price) {
-    if (price >= 1000) {
-      return '\$${price.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (Match m) => '${m[1]},',
-      )}';
-    } else if (price >= 1) {
-      return '\$${price.toStringAsFixed(2)}';
-    } else {
-      return '\$${price.toStringAsFixed(6)}';
-    }
-  }
-
-  // Brazilian Portuguese month abbreviations
-  List<String> get _monthsShort => [
-    'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-    'jul', 'ago', 'set', 'out', 'nov', 'dez'
-  ];
-
-  // Get formatted date and time
-  String _getFormattedDateTime(int dataPointIndex, int totalDataPoints) {
-    // Calculate how many hours ago this data point represents
-    final hoursTotal = 7 * 24; // 168 hours in 7 days
-    final hoursFromEnd = ((totalDataPoints - 1 - dataPointIndex) / (totalDataPoints - 1)) * hoursTotal;
-    
-    // Calculate the actual date/time
-    final now = DateTime.now();
-    final dataTime = now.subtract(Duration(hours: hoursFromEnd.round()));
-    
-    // Format date components
-    final day = dataTime.day.toString().padLeft(2, '0');
-    final month = _monthsShort[dataTime.month - 1];
-    final year = dataTime.year.toString().substring(2); // Last 2 digits
-    final time = '${dataTime.hour.toString().padLeft(2, '0')}:${dataTime.minute.toString().padLeft(2, '0')}';
-    
-    // Return formatted date and time
-    return '$day $month $year, $time';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +50,10 @@ class ChartSection extends StatelessWidget {
                         return touchedSpots.map((touchedSpot) {
                           final price = touchedSpot.y;
                           final dataPointIndex = touchedSpot.x.toInt();
-                          final dateTimeLabel = _getFormattedDateTime(dataPointIndex, chartData.length);
+                          final dateTimeLabel = AppFormatters.getFormattedDateTime(dataPointIndex, chartData.length);
                           
                           return LineTooltipItem(
-                            '${_formatPrice(price)}\n$dateTimeLabel',
+                            '${AppFormatters.formatPrice(price)}\n$dateTimeLabel',
                             TextStyle(
                               color: AppTheme.textPrimary,
                               fontWeight: FontWeight.w600,

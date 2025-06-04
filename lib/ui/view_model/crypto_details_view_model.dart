@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/repositories/crypto_repository.dart';
 import '../../domain/models/coin_data/coin_data_model.dart';
 import '../../core/utils/delayed_result.dart';
+import '../../core/utils/app_formatters.dart';
 
 class CryptoDetailsViewModel extends ChangeNotifier {
   final CryptoRepository cryptoRepository;
@@ -55,8 +56,7 @@ class CryptoDetailsViewModel extends ChangeNotifier {
   // Obter preço em USD formatado
   String get currentPriceUSD {
     final price = coinData?.marketData.currentPrice['usd'];
-    if (price == null) return 'N/A';
-    return '\$${price.toStringAsFixed(2)}';
+    return AppFormatters.formatPrice(price as num?);
   }
 
   // Obter mudança de preço em 24h formatada
@@ -79,13 +79,13 @@ class CryptoDetailsViewModel extends ChangeNotifier {
     if (marketCap == null) return 'N/A';
     
     if (marketCap >= 1e12) {
-      return '\$${(marketCap / 1e12).toStringAsFixed(2)}T';
+      return '\$${(marketCap / 1e12).toStringAsFixed(2).replaceAll('.', ',')}T';
     } else if (marketCap >= 1e9) {
-      return '\$${(marketCap / 1e9).toStringAsFixed(2)}B';
+      return '\$${(marketCap / 1e9).toStringAsFixed(2).replaceAll('.', ',')}B';
     } else if (marketCap >= 1e6) {
-      return '\$${(marketCap / 1e6).toStringAsFixed(2)}M';
+      return '\$${(marketCap / 1e6).toStringAsFixed(2).replaceAll('.', ',')}M';
     } else {
-      return '\$${marketCap.toStringAsFixed(0)}';
+      return AppFormatters.formatPrice(marketCap);
     }
   }
 
@@ -95,13 +95,13 @@ class CryptoDetailsViewModel extends ChangeNotifier {
     if (volume == null) return 'N/A';
     
     if (volume >= 1e12) {
-      return '\$${(volume / 1e12).toStringAsFixed(2)}T';
+      return '\$${(volume / 1e12).toStringAsFixed(2).replaceAll('.', ',')}T';
     } else if (volume >= 1e9) {
-      return '\$${(volume / 1e9).toStringAsFixed(2)}B';
+      return '\$${(volume / 1e9).toStringAsFixed(2).replaceAll('.', ',')}B';
     } else if (volume >= 1e6) {
-      return '\$${(volume / 1e6).toStringAsFixed(2)}M';
+      return '\$${(volume / 1e6).toStringAsFixed(2).replaceAll('.', ',')}M';
     } else {
-      return '\$${volume.toStringAsFixed(0)}';
+      return AppFormatters.formatPrice(volume);
     }
   }
 
