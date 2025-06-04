@@ -19,18 +19,22 @@ class HttpClient {
   Future<void> _setupInterceptors() async {
     if (_interceptorsSetup) return; // Only setup once
     
+    // Configure Dio with timeout settings
+    _dio.options = BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      validateStatus: (status) => status! < 600,
+    );
+    
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Set the base URL for CoinGecko API
-          options.baseUrl = baseUrl;
-          
-          // Set headers for CoinGecko API
-          options.headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          };
-
           // Add API key to query parameters for CoinGecko API
           if (apiKey.isNotEmpty) {
             options.queryParameters = {
@@ -38,10 +42,6 @@ class HttpClient {
               'x_cg_demo_api_key': apiKey,
             };
           }
-
-          options.validateStatus = (status) {
-            return status! < 600;
-          };
           
           return handler.next(options);
         },
@@ -52,6 +52,17 @@ class HttpClient {
             print('Rate limit exceeded for CoinGecko API');
           }
           return handler.next(response);
+        },
+        onError: (error, handler) {
+          // Better error handling for connection issues
+          if (error.type == DioExceptionType.connectionTimeout ||
+              error.type == DioExceptionType.receiveTimeout ||
+              error.type == DioExceptionType.sendTimeout) {
+            print('Connection timeout: ${error.message}');
+          } else if (error.type == DioExceptionType.connectionError) {
+            print('Connection error: ${error.message}');
+          }
+          return handler.next(error);
         },
       ),
     );
@@ -108,9 +119,37 @@ class HttpClient {
       
       throw Failure(apiResponse.data?['message'] ?? 'Erro desconhecido');
       
+    } on DioException catch (e) {
+      String errorMessage;
+      
+      switch (e.type) {
+        case DioExceptionType.connectionError:
+          errorMessage = 'Erro de conexão. Verifique sua conexão com a internet e tente novamente.';
+          break;
+        case DioExceptionType.connectionTimeout:
+          errorMessage = 'Tempo limite de conexão esgotado. Tente novamente.';
+          break;
+        case DioExceptionType.receiveTimeout:
+          errorMessage = 'Tempo limite para receber dados esgotado. Tente novamente.';
+          break;
+        case DioExceptionType.sendTimeout:
+          errorMessage = 'Tempo limite para enviar dados esgotado. Tente novamente.';
+          break;
+        case DioExceptionType.badResponse:
+          errorMessage = 'Servidor retornou erro: ${e.response?.statusCode}';
+          break;
+        case DioExceptionType.cancel:
+          errorMessage = 'Requisição cancelada.';
+          break;
+        default:
+          errorMessage = 'Erro de rede: ${e.message}';
+      }
+      
+      print('Dio Error Details: ${e.toString()}');
+      throw Failure(errorMessage);
     } catch (e) {
       if (e is Failure) rethrow;
-      throw Failure(e.toString());
+      throw Failure('Erro inesperado: ${e.toString()}');
     }
   }
 

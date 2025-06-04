@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/favorites_view_model.dart';
 import '../../design_system/widgets/crypto_card.dart';
+import '../../design_system/widgets/app_dialog.dart';
 import '../../design_system/app_theme.dart';
 import '../../../domain/models/coin/coin_model.dart';
 
@@ -25,52 +26,30 @@ class _FavoritesViewState extends State<FavoritesView> {
     });
   }
 
-  void _showRemoveDialog(CoinModel coin) {
-    showDialog(
+  Future<void> _showRemoveDialog(CoinModel coin) async {
+    final result = await AppDialog.showDestructive(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Remover Favorito'),
-        content: Text('Deseja remover ${coin.name} dos seus favoritos?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.white),),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _viewModel.removeFavorite(coin);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Remover'),
-          ),
-        ],
-      ),
+      title: 'Remover Favorito',
+      content: 'Deseja remover ${coin.name} dos seus favoritos?',
+      confirmText: 'Remover',
     );
+
+    if (result == true) {
+      _viewModel.removeFavorite(coin);
+    }
   }
 
-  void _showClearAllDialog() {
-    showDialog(
+  Future<void> _showClearAllDialog() async {
+    final result = await AppDialog.showDestructive(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Limpar Favoritos'),
-        content: const Text('Deseja remover todos os favoritos? Esta ação não pode ser desfeita.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _viewModel.clearAllFavorites();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Limpar Todos'),
-          ),
-        ],
-      ),
+      title: 'Limpar Favoritos',
+      content: 'Deseja remover todos os favoritos? Esta ação não pode ser desfeita.',
+      confirmText: 'Limpar Todos',
     );
+
+    if (result == true) {
+      _viewModel.clearAllFavorites();
+    }
   }
 
   @override

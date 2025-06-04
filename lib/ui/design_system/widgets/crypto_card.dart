@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../app_theme.dart';
+import 'cached_coin_image.dart';
 import '../../view_model/crypto_details_view_model.dart';
 import '../../view/crypto_details/crypto_details_view.dart';
 import '../../../domain/repositories/crypto_repository.dart';
@@ -56,54 +56,9 @@ class CryptoCard extends StatelessWidget {
           child: Row(
             children: [
               // crypto icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppTheme.accentColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: AppTheme.accentColor.withOpacity(0.2),
-                    width: 1,
-                  ),
-                ),
-                child: iconUrl.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(23),
-                        child: CachedNetworkImage(
-                          imageUrl: iconUrl,
-                          width: 46,
-                          height: 46,
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder:
-                              (context, child, loadingProgress) {
-                                return const Center(
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppTheme.accentColor,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                          errorWidget: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.currency_bitcoin,
-                              color: AppTheme.accentColor,
-                              size: 28,
-                            );
-                          },
-                        ),
-                      )
-                    : const Icon(
-                        Icons.currency_bitcoin,
-                        color: AppTheme.accentColor,
-                        size: 28,
-                      ),
+              CachedCoinImage.circular(
+                imageUrl: iconUrl,
+                size: 48,
               ),
               const SizedBox(width: 16),
 

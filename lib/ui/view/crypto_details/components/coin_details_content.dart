@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../view_model/crypto_details_view_model.dart';
 import '../../../design_system/app_theme.dart';
+import '../../../design_system/widgets/cached_coin_image.dart';
 import 'price_section.dart';
 import 'chart_section.dart';
 import 'market_stats_section.dart';
@@ -50,38 +51,12 @@ class CoinDetailsContent extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              // Ícone da moeda
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Image.network(
-                                    coinData.image.large,
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        width: 60,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.cardColor,
-                                          borderRadius: BorderRadius.circular(30),
-                                        ),
-                                        child: const Icon(
-                                          Icons.currency_bitcoin,
-                                          color: AppTheme.accentColor,
-                                          size: 30,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
+                              // Coin icon
+                              CachedCoinImage.rounded(
+                                imageUrl: coinData.image.large,
+                                size: 60,
+                                borderRadius: 30,
+                                backgroundColor: Colors.white,
                               ),
                               const SizedBox(width: 16),
                               Expanded(
