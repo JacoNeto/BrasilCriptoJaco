@@ -56,7 +56,6 @@ A Flutter cryptocurrency app that allows users to search and favorite cryptocurr
 ```
 lib/
 ├── core/
-│   ├── app_theme.dart          # App theme and colors
 │   ├── intercepts/             # Error handling
 │   └── utils/                  # Utility classes
 ├── data/
